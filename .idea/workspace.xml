@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c7db9cb5-d35e-45f7-949d-c50222092ac9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/es/cipfpbatoi/dam/psp/examen/Barberia.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/es/cipfpbatoi/dam/psp/examen/Barbero.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/es/cipfpbatoi/dam/psp/examen/Cliente.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/es/cipfpbatoi/dam/psp/examen/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/es/cipfpbatoi/dam/psp/examen/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
