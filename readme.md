@@ -1,96 +1,49 @@
-# Actividad: El Problema del Barbero Dormilón en Java
+ __PROBLEMA DEL BARBERO__
+==========================
 
-* [1. Objetivo](#1-objetivo)
-* [2. Contexto](#2-contexto)
-* [3. Requisitos](#3-requisitos)
-* [4. Tareas](#4-tareas)
-* [5. Esquema para Trabajar](#5-esquema-para-trabajar)
-* [6. Entrega](#6-entrega)
-* [7. Consideraciones](#7-consideraciones)
-* [8. Referencias](#8-referencias)
+-------------------------
+- _Decisión del Cliente_:
+Si quisieramos que el cliente pudiera elegir entre esperar, o irse,
+lo que podríamos hacer sería que el cliente tuviera un añadido de
+espera de tiempo máximo para ver si la barbería antes de que terminase
+este tiempo tiene un hueco libre, si fuera así, este cliente accedería
+a la barbería, pero si no, este cliente, con el tiempo de espera excedido
+se iría de la barbería. Para hacer que esto fuera posible, aparte
+indicaríamos mediante un mensaje si el cliente está esperando, y si el 
+cliente se ha cansado de esperar y se ha ido.
+-------------------------
 
-![El Barbero Durmiente](md_media/Barbero.webp)
+--------------------------------
+- _Manejo de la Cola de Espera_:
+La cola de espera en este ejercicio se está comprobando que sea eficiente
+en todo momento, puesto que usamos una Queue con un LinkedList, que permite
+que recojamos clientes de distintas posiciones, en este caso, como se añaden
+clientes en la posición final siempre mediante el método add() de LinkedList,
+y aparte, al sacar un cliente lo hacemos desde el inicio de la lista (su head)
+mediante el método poll(), siempre recogeremos como cliente a los que hayan
+llegado primero.
+--------------------------------
 
-## 1. Objetivo
+----------------------------------
+- _Concurrencia y Sincronización_:
+En este código usamos lock y condition, concretamente 2 de la última, para hacer
+posible la sincronización entre el barbero y los clientes. Por lo tanto, ahora en
+el caso de que quisiéramos evitar que un cliente despierte al barbero mientras este
+atiende a otro cliente, lo que podríamos usar sería una variable boolean que compruebe
+dicho estado, es decir, que compruebe si el barbero está despierto ya. Y en el caso de
+que varios clientes lleguen mientras solamente queda una silla disponible, esto lo
+podríamos arreglar recogiendo al primer cliente que llegue, y no permitiendo a más entrar,
+con lo cual también podríamos comprobarlo con una variable boolean, comprobaríamos que
+la barbería este llena (que el tamaño de la cola sea el mismo que el máximo de sillas).
+----------------------------------
 
-Implementar una solución al clásico problema de concurrencia del barbero dormilón utilizando mecanismos de concurrencia en Java, como hilos ([`Thread`][Thread]), bloqueos reentrantes ([`ReentrantLock`][ReentrantLock]), variables de condición ([`Condition`][Condition]), y semáforos ([`Semaphore`][Semaphore]).
-
-## 2. Contexto
-
-En una barbería hay un barbero, una silla de barbero, y N (Para este ejemplo 5) sillas para los clientes esperar si el barbero está ocupado. Si no hay clientes, el barbero se sienta en la silla y se duerme. Cuando llega un cliente, este tiene que despertar al barbero si está dormido o, si el barbero está atendiendo a otro cliente, esperar en una de las sillas disponibles. Si todas las sillas están ocupadas, el cliente se va.
-
-## 3. Requisitos
-
-1. **Barbero y Clientes:** Deben ser representados por hilos separados.
-2. **Sincronización:** Utiliza [`ReentrantLock`][ReentrantLock] y [`Condition`][Condition] para sincronizar el acceso a la silla del barbero y la espera de los clientes.
-3. **Entrada Aleatoria:** Los clientes deben llegar en momentos aleatorios, por ejemplo entre 5 y 10 segundos.
-4. **Tiempo de Corte Aleatorio:** El barbero toma un tiempo aleatorio para cortar el cabello a cada cliente. Entre 10 y 15 segundos.
-5. **Cola de Espera:** Implementa una cola para gestionar los clientes que esperan. Esta cola en una primera aproximación puede realizarse como lo que hemos visto en clase de utilizar una [`LinkedList`][LinkedList] por ejemplo, pero luego veremos las colas ([`Queue`][Queue]) que nos servirán precisamente para este tipo de propósitos.
-
-## 4. Tareas
-
-1. **Diseñar la Barbería:** Crea clases para representar la barbería, el barbero, y los clientes. Usa la estructura [`LinkedList`][LinkedList] para la cola de espera de los clientes.~~~~
-2. **Implementar la Lógica de Sincronización:** Usa [`ReentrantLock`][ReentrantLock] para proteger el acceso a la silla del barbero y [`Condition`][Condition] para manejar el sueño y el despertar del barbero, así como la espera de los clientes.
-3. **Simular Entradas y Tiempos Aleatorios:** Utiliza la clase [`ThreadRandom`][ThreadLocalRandom] para simular la llegada aleatoria de clientes y el tiempo que toma cada corte de cabello. Esta clase se utiliza para generar eficientemente números aleatorios desde varios hilos
-4. **Probar la Solución:** Asegúrate de que tu solución maneje correctamente situaciones como el barbero durmiendo cuando no hay clientes, clientes esperando cuando el barbero está ocupado, y clientes yéndose cuando no hay sillas disponibles.
-
-## 5. Esquema para Trabajar
-
-A continuación se detalla un esquema básico de como podría ser la solución para implementar el barbero y los clientes, aunque posiblemente la mejor solución sea utilizar una clase `Barbería` que gestione los clientes y todo el protocolo de espera.
-
-```plantuml
-@startuml
-actor Cliente
-entity Barbero
-
-== Flujo de Actividades ==
-loop cada cliente
-    Cliente -> Barbero: Llega cliente
-    alt Si el Barbero está durmiendo
-        Barbero -> Barbero: Despertar
-    else
-        Barbero -> Barbero: Añadir cliente a la cola
-    end
-end
-
-Barbero -> Barbero: Verificar cola de clientes
-loop mientras haya clientes en la cola
-    Barbero -> Barbero: Atender cliente
-    ... Tiempo de corte ...
-    Barbero -> Cliente: Cliente atendido
-    Cliente -> Cliente: Sale de la barbería
-    Barbero -> Barbero: Verificar cola de clientes
-end
-
-alt Si no hay más clientes
-    Barbero -> Barbero: Dormir
-end
-@enduml
-
-```
-
-## 6. Entrega
-
-Tu programa debe compilar y ejecutarse sin errores, mostrando en la consola el flujo de eventos en la barbería (por ejemplo, llegada de clientes, el barbero cortando el cabello, clientes esperando o yéndose).
-
-## 7. Consideraciones
-
-Es muy importante que te plantees primero el diseño de la solución antes de empezar a escribir el código. Como se ha comentado repetidas veces en ejercicios anteriores, lo más importante es que las soluciones sean correctas desde el punto de vista de la concurrencia, no que funcionen, por tanto se ha de insistir en la parte del diseño mucho más que en cualquier otro tipo de programa que no acceda a recursos de forma concurrente.
-
-## 8. Referencias
-
-* [Thread]
-* [ReentrantLock]
-* [Condition]
-* [Semaphore]
-* [ThreadLocalRandom]
-* [LinkedList]
-* [Queue]
-
-[Thread]: https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html
-[ReentrantLock]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/ReentrantLock.html
-[Condition]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Condition.html
-[Semaphore]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Semaphore.html
-[ThreadLocalRandom]: https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ThreadLocalRandom.html
-[LinkedList]: https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html
-[Queue]: https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html
+--------------------------
+- _Justicia y Eficiencia_:
+En el diseño actual garantizamos que haya justicia al menos en que los clientes sean atendidos
+en el orden de llegada, pero en el caso de la atención al cliente no hay mucha justicia que
+digamos, para poder solventar esto podríamos usar varios hilos de barbero, con el fin de poder
+atender varios clientes al mismo tiempo, y que nunca tengan que esperar demasiado, mucho menos
+que no puedan entrar más clientes, por otro lado, también podríamos estabilizar un poco los
+tiempos de espera de clientes y barbero, para que el barbero no tarde demasiado en realizar su
+tarea, y los clientes no lleguen como si fueran palomitas en una sarten.
+--------------------------
